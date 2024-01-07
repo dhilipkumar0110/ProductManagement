@@ -1,0 +1,63 @@
+﻿@page "/Editcategory/{Id}"
+
+
+@using ProductCatalogue.Data
+@inject CategoryService editCategory
+@inject NavigationManager NavigationManager
+
+<h3>Edit Category</h3>
+
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="for-group">
+                <label for="CategoryyName" class="control-label"><strong>Category Name</strong></label>
+                <input form="CategoryyName" class="form-control" @bind="@catName" />
+            </div>
+            <br />
+            <div class="for-group">
+                <label for="Description" class="control-label"><strong>Category Description</strong></label>
+                <input form="Description" class="form-control" @bind="@catdescription" />
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <br />
+                <input type="button" class="btn btn-primary" @onclick="@UpdateCategory" value="Save" />
+
+                <input type="button" class="btn btn-danger" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@code {
+
+    [Parameter]
+    public string Id{ get; set; }
+    string catName;
+    string catdescription;
+    Category categoryObj = new Category();
+
+    protected override async Task OnInitializedAsync()
+    {
+        categoryObj = await Task.Run(() => editCategory.GetCategoryByID(Convert.ToInt32(Id)));
+        catName = categoryObj.CategoryName;
+        catdescription = categoryObj.CategoryDescription;
+    }
+    protected async void UpdateCategory()
+    {
+        categoryObj.CategoryName = catName;
+        categoryObj.CategoryDescription = catdescription;
+        await editCategory.UpdateCategoryDetails(categoryObj);
+        NavigationManager.NavigateTo("Categories");
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("Categories");
+    }
+}

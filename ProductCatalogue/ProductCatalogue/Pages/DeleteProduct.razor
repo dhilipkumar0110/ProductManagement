@@ -1,0 +1,67 @@
+﻿@page "/DeleteProduct/{Id:int}"
+
+
+@using ProductCatalogue.Data
+@inject ProductServices deleteProduct
+@inject NavigationManager NavigationManager
+
+<h3>Delete Category</h3>
+
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="for-group">
+                <label for="CategoryyName" class="control-label"><strong>Product ID : </strong></label>
+                <label>@product.ProductId</label>
+            </div>
+            <br />
+            <div class="for-group">
+                <label for="Description" class="control-label"><strong>Product Name : </strong></label>
+                <label>@product.ProductName</label>
+            </div>
+            <br />
+            <div class="for-group">
+                <label for="Description" class="control-label"><strong>Product Price : </strong></label>
+                <label>@product.ProductPrice</label>
+            </div>
+            <br />
+            <div class="for-group">
+                <label for="Description" class="control-label"><strong>Quantity : </strong></label>
+                <label>@product.Quantity</label>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <br />
+                <input type="button" class="btn btn-primary" @onclick="@DeleteProductRecord" value="Delete" />
+
+                <input type="button" class="btn btn-danger" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+    Products product = new Products();
+
+    protected override async Task OnInitializedAsync()
+    {
+        product = await Task.Run(() => deleteProduct.GetProductByID(Convert.ToInt32(Id)));
+    }
+    protected async void DeleteProductRecord()
+    {
+        await deleteProduct.DeleteProductDetails(product);
+        NavigationManager.NavigateTo("ProductList/"+product.CategoryID);
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("ProductList/"+product.CategoryID);
+    }
+}

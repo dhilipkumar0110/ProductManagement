@@ -1,0 +1,121 @@
+﻿@page "/PropertiesList"
+@page "/PropertiesList/{ID:int}"
+
+@using ProductCatalogue.Data
+@inject PropertyService propertyService
+@inject ProductServices productService
+@inject NavigationManager NavigationManager
+
+
+<style>
+    .col-lg-9 {
+        width: 45%;
+    }
+</style>
+
+
+<div class="row">
+    <div class="col-lg-9">
+        @if (product != null)
+        {
+            <h2>@product.ProductName</h2>
+        }
+    </div>
+    <div class="col-lg-3 text-start">
+        <NavLink class="btn btn-success btn-sm" href="@NavigateTolink("AddNewProperty/")">
+            <span class="oi oi-plus" aria-hidden="true">  Add New Property</span>
+        </NavLink>
+    </div>
+    <div class="col-lg-3 text-start">
+        <NavLink class="btn btn-danger btn-sm" href="@Navigate("ProductList/"+this.categoryID)">
+            <span class="oi oi-account-logout" aria-hidden="true"> Go Back</span>
+        </NavLink>
+    </div>
+    <br />
+    <br />
+</div>
+
+
+@if (propertiesObj is null)
+{
+    <p><em>Loading....</em></p>
+}
+else
+{
+    <table class="table table-bordered table-striped table-sm">
+        <thead>
+            <tr>
+                <th>
+                    Property ID
+                </th>
+                <th>
+                    Property Name
+                </th>
+                <th>
+                    Property Value
+                </th>
+                <th>
+                    Edit
+                </th>
+                <th>
+                    Delete
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var property in propertiesObj)
+            {
+                if (property.ProductId == ID)
+                {
+                    <tr>
+                        <td>
+                            @property.PropertyId
+                        </td>
+                        <td>
+                            @property.PropertyName
+                        </td>
+                        <td>
+                            @property.PropertyValue
+                        </td>
+                        <td>
+                            <a class="btn btn-secondary btn-sm" href="@Navigate("EditProperties/"+@property.PropertyId)">
+                                <span class="oi oi-pencil" aria-hidden="true">Edit</span>
+                            </a>
+                        </td>
+                        <td>
+                            <a class="btn btn-danger btn-sm" href="@Navigate("DeleteProperties/"+property.PropertyId)">
+                                <span class="oi oi-trash" aria-hidden="true">Delete</span>
+                            </a>
+                        </td>
+                    </tr>
+                }
+
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public int ID { get; set; }
+    Products product;
+    private int categoryID { get; set; } = 1;
+    List<ProductProperties> propertiesObj;
+
+    protected override async Task OnInitializedAsync()
+    {
+        propertiesObj = await Task.Run(() => propertyService.GetAllProperties());
+
+        product = await Task.Run(() => productService.GetProductByID(ID));
+        this.categoryID = product.CategoryID;
+    }
+    public string NavigateTolink(string name)
+    {
+        return name + this.ID;
+    }
+    public string Navigate(string name)
+    {
+        return name;
+    }
+
+}

@@ -1,0 +1,90 @@
+﻿@* @page "/AddNewProduct" *@
+@page "/AddNewProduct/{categoryId:int}"
+
+
+
+@using ProductCatalogue.Data
+@inject ProductServices addCategory
+@inject CategoryService addCategory1
+@inject NavigationManager NavigationManager
+
+<h3>Add New Product</h3>
+
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="for-group">
+                <label for="ProductName" class="control-label">Product Name</label>
+                <input form="ProductName" class="form-control" @bind="@categoryObj.ProductName" />
+            </div>
+            <br />
+            <div class="for-group">
+                <label for="Price" class="control-label">Product Price</label>
+                <input form="Price" class="form-control" @bind="@categoryObj.ProductPrice" />
+            </div>
+            <br />
+            <div class="for-group">
+                <label for="Quantity" class="control-label">Quantity</label>
+                <input form="Quantity" class="form-control" @bind="@categoryObj.Quantity" />
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <br />
+                <input type="button" class="btn btn-primary" @onclick="@CreateNewProduct" value="Add" />
+
+                <input type="button" class="btn btn-danger" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@code {
+    [Parameter]
+    public int categoryId { get; set; }
+
+    public int ID{ get; set; }
+    List<Category> CategoryObj;
+    Products categoryObj = new Products();
+
+    protected override async Task OnInitializedAsync()
+    {
+        CategoryObj = await Task.Run(() => addCategory1.GetAllCategories());
+        if(CategoryObj.Count>0)
+        {
+            foreach (Category cat in CategoryObj)
+            {
+                if (cat.Category_Id == Convert.ToInt32(categoryId))
+                {
+                    ID = cat.Category_Id;
+                    categoryObj.CategoryID = cat.Category_Id;
+                }
+            }
+        }
+    }
+
+    protected async void CreateNewProduct()
+    {
+        if(CategoryObj.Count>0)
+        {
+            foreach (Category cat in CategoryObj)
+            {
+                if (cat.Category_Id == Convert.ToInt32(categoryId))
+                {
+                    ID = cat.Category_Id;
+                    categoryObj.CategoryID = cat.Category_Id;
+                }
+            }
+        }
+        await addCategory.AddNewProduct(categoryObj);
+        NavigationManager.NavigateTo("ProductList/"+this.categoryId);
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("ProductList/"+this.categoryId);
+    }
+}
