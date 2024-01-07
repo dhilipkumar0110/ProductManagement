@@ -1,0 +1,50 @@
+﻿@page "/AddNewcategory"
+
+
+@using ProductCatalogue.Data
+@inject CategoryService addCategory
+@inject NavigationManager NavigationManager
+
+<h3>Add New Category</h3>
+
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="for-group">
+                <label for="CategoryyName" class="control-label"><strong>Category Name</strong></label>
+                <input form="CategoryyName" class="form-control" @bind="@categoryObj.CategoryName"/>
+            </div>
+            <br />
+            <div class="for-group">
+                <label for="Description" class="control-label"><strong>Category Description</strong></label>
+                <input form="Description" class="form-control" @bind="@categoryObj.CategoryDescription" />
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <br />
+                <input type="button" class="btn btn-primary" @onclick="@CreateNewCategory" value="Add"/>
+
+                <input type="button" class="btn btn-danger" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@code {
+    Category categoryObj = new Category();
+
+    protected async void CreateNewCategory()
+    {
+        await addCategory.AddNewCategory(categoryObj);
+        NavigationManager.NavigateTo("Categories");
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("Categories");
+    }
+}

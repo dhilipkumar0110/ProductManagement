@@ -1,0 +1,129 @@
+﻿@page "/ProductList"
+@page "/ProductList/{ID:int}"
+
+@using ProductCatalogue.Data
+@inject ProductServices productServices
+@inject CategoryService categoryService
+@inject NavigationManager NavigationManager
+
+<style>
+    .col-lg-9 {
+        width: 45%;
+    }
+</style>
+
+<div class="row">
+    <div class="col-lg-9">
+        @if (parentCategory != null)
+        {
+            <h2>@parentCategory.CategoryName</h2>
+        }
+    </div>
+    <div class="col-lg-3 text-start">
+        <NavLink class="btn btn-success btn-sm" href="@NavigateTolink("AddNewProduct/")">
+            <span class="oi oi-plus" aria-hidden="true">  Add New Product</span>
+        </NavLink>
+    </div>
+    <div class="col-lg-3 text-start">
+        <NavLink class="btn btn-danger btn-sm" href="@Navigate("Categories/")">
+            <span class="oi oi-account-logout" aria-hidden="true"> Go Back</span>
+        </NavLink>
+    </div>
+    <br />
+    <br />
+</div>
+
+@if (CategoryObj is null)
+{
+    <p><em>Loading....</em></p>
+}
+else
+{
+    <table class="table table-bordered table-striped table-sm">
+        <thead>
+            <tr>
+                <th>
+                    Product ID
+                </th>
+                <th>
+                    Product Name
+                </th>
+                <th>
+                    Price
+                </th>
+                <th>
+                    Quantity
+                </th>
+                <th>
+                    Show Features
+                </th>
+                <th>
+                    Edit
+                </th>
+                <th>
+                    Delete
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cate in CategoryObj)
+            {
+                if(cate.CategoryID == ID)
+                {
+                    <tr>
+                        <td>
+                            @cate.ProductId
+                        </td>
+                        <td>
+                            @cate.ProductName
+                        </td>
+                        <td>
+                            @cate.ProductPrice
+                        </td>
+                        <td>
+                            @cate.Quantity
+                        </td>
+                        <td>
+                            <a class="btn btn-primary btn-sm" href="@Navigate("PropertiesList/"+@cate.ProductId)">
+                                <span class="oi oi-eye" aria-hidden="true"> View Features</span>
+                            </a>
+                        </td>
+                        <td>
+                            <a class="btn btn-secondary btn-sm" href="@Navigate("EditProduct/"+@cate.ProductId)">
+                                <span class="oi oi-pencil" aria-hidden="true">  Edit</span>
+                            </a>
+                        </td>
+                        <td>
+                            <a class="btn btn-danger btn-sm" href="@Navigate("DeleteProduct/"+cate.ProductId)">
+                                <span class="oi oi-trash" aria-hidden="true">  Delete</span>
+                            </a>
+                        </td>
+                    </tr>
+                }
+                
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public int ID{ get; set; }
+    private string categoryName;
+    Category parentCategory;
+    List<Products> CategoryObj;
+
+    protected override async Task OnInitializedAsync()
+    {
+        CategoryObj = await Task.Run(() => productServices.GetAllProducts());
+        parentCategory = await Task.Run(() => categoryService.GetCategoryByID(Convert.ToInt32(ID)));
+    }
+    public string NavigateTolink(string name)
+    {
+        return name + this.ID;
+    }
+    public string Navigate(string name)
+    {
+        return name;
+    }
+}

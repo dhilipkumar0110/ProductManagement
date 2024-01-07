@@ -1,0 +1,57 @@
+﻿@page "/EditProperties/{Id:int}"
+
+
+@using ProductCatalogue.Data
+@inject PropertyService productServices
+@inject NavigationManager NavigationManager
+
+<h3>Edit Product</h3>
+
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="for-group">
+                <label for="CategoryName" class="control-label"><strong>Property Name</strong></label>
+                <input form="CategoryyName" class="form-control" @bind="@productObject.PropertyName" />
+            </div>
+            <br />
+            <div class="for-group">
+                <label for="Quantity" class="control-label"><strong>Property Value</strong></label>
+                <input form="Quantity" class="form-control" @bind="@productObject.PropertyValue" />
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <br />
+                <input type="button" class="btn btn-primary" @onclick="@UpdateCategory" value="Save" />
+
+                <input type="button" class="btn btn-danger" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+    ProductProperties productObject = new ProductProperties();
+
+    protected override async Task OnInitializedAsync()
+    {
+        productObject = await Task.Run(() => productServices.GetPropertyByID(Convert.ToInt32(Id)));
+    }
+    protected async void UpdateCategory()
+    {
+        await productServices.UpdatePropertyDetails(productObject);
+        NavigationManager.NavigateTo("PropertiesList/" + this.productObject.ProductId);
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("PropertiesList/" + this.productObject.ProductId);
+    }
+}

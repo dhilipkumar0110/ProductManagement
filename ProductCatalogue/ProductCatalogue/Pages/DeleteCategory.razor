@@ -1,0 +1,57 @@
+﻿@page "/Deletecategory/{Id}"
+
+
+@using ProductCatalogue.Data
+@inject CategoryService deleteCategoryService
+@inject NavigationManager NavigationManager
+
+<h3>Delete Category</h3>
+
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="for-group">
+                <label for="CategoryyName" class="control-label"><strong>Category Name : </strong></label>
+                <label>@categoryObj.CategoryName</label>
+            </div>
+            <br />
+            <div class="for-group">
+                <label for="Description" class="control-label"><strong>Category Description : </strong></label>
+                <label>@categoryObj.CategoryDescription</label>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <br />
+                <input type="button" class="btn btn-primary" @onclick="@DeleteCategoryRecord" value="Delete" />
+
+                <input type="button" class="btn btn-danger" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+    Category categoryObj = new Category();
+
+    protected override async Task OnInitializedAsync()
+    {
+        categoryObj = await Task.Run(() => deleteCategoryService.GetCategoryByID(Convert.ToInt32(Id)));
+    }
+    protected async void DeleteCategoryRecord()
+    {
+        await deleteCategoryService.DeleteCategoryDetails(categoryObj);
+        NavigationManager.NavigateTo("Categories");
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("Categories");
+    }
+}

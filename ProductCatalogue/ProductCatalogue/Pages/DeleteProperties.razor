@@ -1,0 +1,63 @@
+﻿@page "/DeleteProperties/{Id:int}"
+
+
+@using ProductCatalogue.Data
+@inject PropertyService deleteServices
+@inject NavigationManager NavigationManager
+
+<h3>Delete Property</h3>
+
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="for-group">
+                <label for="CategoryyName" class="control-label"><strong>Product ID : </strong></label>
+                <label>@product.ProductId</label>
+            </div>
+            <br />
+            <div class="for-group">
+                <label for="Description" class="control-label"><strong>Product Name : </strong></label>
+                <label>@product.PropertyName</label>
+            </div>
+            <br />
+            <div class="for-group">
+                <label for="Description" class="control-label"><strong>Product Price : </strong></label>
+                <label>@product.PropertyValue</label>
+            </div>
+            
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <br />
+                <input type="button" class="btn btn-primary" @onclick="@DeletePropertyRecord" value="Delete" />
+
+                <input type="button" class="btn btn-danger" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+    ProductProperties product = new ProductProperties();
+
+    protected override async Task OnInitializedAsync()
+    {
+        product = await Task.Run(() => deleteServices.GetPropertyByID(Convert.ToInt32(Id)));
+    }
+    protected async void DeletePropertyRecord()
+    {
+        await deleteServices.DeletePropertyDetails(product);
+        NavigationManager.NavigateTo("PropertiesList/" + this.product.ProductId);
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("PropertiesList/" + this.product.ProductId);
+    }
+}

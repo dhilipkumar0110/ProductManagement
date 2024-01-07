@@ -1,0 +1,84 @@
+﻿@page "/AddNewProperty/{productId:int}"
+
+@using ProductCatalogue.Data
+@inject ProductServices productService
+@inject PropertyService propertyService
+@inject NavigationManager NavigationManager
+
+<h3>Add New Property</h3>
+
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            
+            <div class="for-group">
+                <label for="ProductName" class="control-label"><strong>Enter the Property Name</strong></label>
+                <input form="ProductName" class="form-control" @bind="@NewProduct.PropertyName" />
+            </div>
+            <br />
+            <div class="for-group">
+                <label for="Price" class="control-label"><strong>Enter the Property Value</strong></label>
+                <input form="Price" class="form-control" @bind="@NewProduct.PropertyValue" />
+            </div>
+           
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <br />
+                <input type="button" class="btn btn-primary" @onclick="@CreateNewProduct" value="Add" />
+
+                <input type="button" class="btn btn-danger" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@code {
+    [Parameter]
+    public int productId { get; set; }
+
+    public int ID { get; set; }
+    List<Products> ProductList;
+    ProductProperties NewProduct = new ProductProperties();
+
+    protected override async Task OnInitializedAsync()
+    {
+        ProductList = await Task.Run(() => productService.GetAllProducts());
+        if (ProductList.Count > 0)
+        {
+            foreach (Products product in ProductList)
+            {
+                if (product.ProductId == Convert.ToInt32(productId))
+                {
+                    ID = product.ProductId;
+                    NewProduct.ProductId = product.ProductId;
+                }
+            }
+        }
+    }
+
+    protected async void CreateNewProduct()
+    {
+        if (ProductList.Count > 0)
+        {
+            foreach (Products product in ProductList)
+            {
+                if (product.ProductId == Convert.ToInt32(productId))
+                {
+                    ID = product.ProductId;
+                    NewProduct.ProductId = product.ProductId;
+                }
+            }
+        }
+        await propertyService.AddNewProperty(NewProduct);
+        NavigationManager.NavigateTo("PropertiesList/" + this.productId);
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("PropertiesList/" + this.productId);
+    }
+}
