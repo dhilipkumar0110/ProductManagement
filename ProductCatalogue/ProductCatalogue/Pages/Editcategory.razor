@@ -12,12 +12,12 @@
         <div class="col-md-8">
             <div class="for-group">
                 <label for="CategoryyName" class="control-label"><strong>Category Name</strong></label>
-                <input form="CategoryyName" class="form-control" @bind="@catName" />
+                <input form="CategoryyName" class="form-control" @bind="@categoryName" />
             </div>
             <br />
             <div class="for-group">
                 <label for="Description" class="control-label"><strong>Category Description</strong></label>
-                <input form="Description" class="form-control" @bind="@catdescription" />
+                <input form="Description" class="form-control" @bind="@categoryDescription" />
             </div>
         </div>
 
@@ -38,20 +38,20 @@
 
     [Parameter]
     public string Id{ get; set; }
-    string catName;
-    string catdescription;
+    string categoryName;
+    string categoryDescription;
     Category categoryObj = new Category();
 
     protected override async Task OnInitializedAsync()
     {
         categoryObj = await Task.Run(() => editCategory.GetCategoryByID(Convert.ToInt32(Id)));
-        catName = categoryObj.CategoryName;
-        catdescription = categoryObj.CategoryDescription;
+        categoryName = categoryObj.CategoryName;
+        categoryDescription = categoryObj.CategoryDescription;
     }
     protected async void UpdateCategory()
     {
-        categoryObj.CategoryName = catName;
-        categoryObj.CategoryDescription = catdescription;
+        categoryObj.CategoryName = categoryName;
+        categoryObj.CategoryDescription = categoryDescription;
         await editCategory.UpdateCategoryDetails(categoryObj);
         NavigationManager.NavigateTo("Categories");
     }
