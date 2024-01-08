@@ -38,8 +38,8 @@
 
     [Parameter]
     public string Id{ get; set; }
-    string categoryName;
-    string categoryDescription;
+    string categoryName = string.Empty;
+    string categoryDescription = string.Empty;
     Category categoryObj = new Category();
 
     protected override async Task OnInitializedAsync()

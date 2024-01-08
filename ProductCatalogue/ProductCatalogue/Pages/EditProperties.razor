@@ -12,12 +12,12 @@
         <div class="col-md-8">
             <div class="for-group">
                 <label for="CategoryName" class="control-label"><strong>Property Name</strong></label>
-                <input form="CategoryyName" class="form-control" @bind="@productObject.PropertyName" />
+                <input form="CategoryyName" class="form-control" @bind="@propertyName" />
             </div>
             <br />
             <div class="for-group">
                 <label for="Quantity" class="control-label"><strong>Property Value</strong></label>
-                <input form="Quantity" class="form-control" @bind="@productObject.PropertyValue" />
+                <input form="Quantity" class="form-control" @bind="@propertyValue" />
             </div>
         </div>
 
@@ -38,14 +38,20 @@
 
     [Parameter]
     public int Id { get; set; }
+    string propertyName = string.Empty;
+    string propertyValue = string.Empty;
     ProductProperties productObject = new ProductProperties();
 
     protected override async Task OnInitializedAsync()
     {
         productObject = await Task.Run(() => productServices.GetPropertyByID(Convert.ToInt32(Id)));
+        propertyName = productObject.PropertyName;
+        propertyValue = productObject.PropertyValue;
     }
     protected async void UpdateCategory()
     {
+        productObject.PropertyName = propertyName;
+        productObject.PropertyValue = propertyValue;
         await productServices.UpdatePropertyDetails(productObject);
         NavigationManager.NavigateTo("PropertiesList/" + this.productObject.ProductId);
     }

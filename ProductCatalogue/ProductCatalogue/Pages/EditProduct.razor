@@ -12,17 +12,17 @@
         <div class="col-md-8">
             <div class="for-group">
                 <label for="CategoryName" class="control-label"><strong>Category Name</strong></label>
-                <input form="CategoryyName" class="form-control" @bind="@categoryObj.ProductName" />
+                <input form="CategoryyName" class="form-control" @bind="@productName" />
             </div>
             <br />
             <div class="for-group">
                 <label for="Price" class="control-label"><strong>Product Price</strong></label>
-                <input form="Price" class="form-control" @bind="@categoryObj.ProductPrice" />
+                <input form="Price" class="form-control" @bind="@productPrice" />
             </div>
             <br />
             <div class="for-group">
                 <label for="Quantity" class="control-label"><strong>Quantity</strong></label>
-                <input form="Quantity" class="form-control" @bind="@categoryObj.Quantity" />
+                <input form="Quantity" class="form-control" @bind="@productQuantity" />
             </div>
         </div>
 
@@ -43,14 +43,23 @@
 
     [Parameter]
     public int Id { get; set; }
+    string productName = string.Empty;
+    double productPrice;
+    int productQuantity;
     Products categoryObj = new Products();
 
     protected override async Task OnInitializedAsync()
     {
         categoryObj = await Task.Run(() => editProductService.GetProductByID(Convert.ToInt32(Id)));
+        productName = categoryObj.ProductName;
+        productPrice = categoryObj.ProductPrice;
+        productQuantity = categoryObj.Quantity;
     }
     protected async void UpdateCategory()
     {
+        categoryObj.ProductName = productName;
+        categoryObj.ProductPrice = productPrice;
+        categoryObj.Quantity = productQuantity;
         await editProductService.UpdateProductDetails(categoryObj);
         NavigationManager.NavigateTo("ProductList/" + this.categoryObj.CategoryID);
     }
